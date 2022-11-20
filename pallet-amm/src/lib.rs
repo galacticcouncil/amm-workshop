@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_support::sp_runtime::{traits::Zero, DispatchError};
-use frame_support::{dispatch::DispatchResult, ensure, traits::Get, transactional};
+
+use frame_support::{dispatch::DispatchResult, traits::Get};
 use frame_system::ensure_signed;
 
 mod weights;
@@ -46,12 +46,12 @@ pub mod pallet {
 		#[pallet::weight(<T as Config>::WeightInfo::create_pool())]
 		pub fn create_pool(
 			origin: OriginFor<T>,
-			asset_a: AssetId,
-			amount_a: Balance,
-			asset_b: AssetId,
-			amount_b: Balance,
+			_asset_a: AssetId,
+			_amount_a: Balance,
+			_asset_b: AssetId,
+			_amount_b: Balance,
 		) -> DispatchResult {
-			let who = ensure_signed(origin)?;
+			let _who = ensure_signed(origin)?;
 
 			Ok(())
 		}
@@ -59,12 +59,12 @@ pub mod pallet {
 		#[pallet::weight(<T as Config>::WeightInfo::add_liquidity())]
 		pub fn add_liquidity(
 			origin: OriginFor<T>,
-			asset_a: AssetId,
-			asset_b: AssetId,
-			amount_a: Balance,
-			amount_b_max_limit: Balance,
+			_asset_a: AssetId,
+			_asset_b: AssetId,
+			_amount_a: Balance,
+			_amount_b_max_limit: Balance,
 		) -> DispatchResult {
-			let who = ensure_signed(origin)?;
+			let _who = ensure_signed(origin)?;
 
 			Ok(())
 		}
@@ -72,11 +72,11 @@ pub mod pallet {
 		#[pallet::weight(<T as Config>::WeightInfo::remove_liquidity())]
 		pub fn remove_liquidity(
 			origin: OriginFor<T>,
-			asset_a: AssetId,
-			asset_b: AssetId,
-			liquidity_amount: Balance,
+			_asset_a: AssetId,
+			_asset_b: AssetId,
+			_liquidity_amount: Balance,
 		) -> DispatchResult {
-			let who = ensure_signed(origin)?;
+			let _who = ensure_signed(origin)?;
 
 			Ok(())
 		}
@@ -84,13 +84,13 @@ pub mod pallet {
 		#[pallet::weight(<T as Config>::WeightInfo::sell())]
 		pub fn sell(
 			origin: OriginFor<T>,
-			asset_in: AssetId,
-			asset_out: AssetId,
-			amount: Balance,
-			max_limit: Balance,
-			discount: bool,
+			_asset_in: AssetId,
+			_asset_out: AssetId,
+			_amount: Balance,
+			_max_limit: Balance,
+			_discount: bool,
 		) -> DispatchResult {
-			let who = ensure_signed(origin)?;
+			let _who = ensure_signed(origin)?;
 
 			Ok(())
 		}
@@ -98,13 +98,13 @@ pub mod pallet {
 		#[pallet::weight(<T as Config>::WeightInfo::buy())]
 		pub fn buy(
 			origin: OriginFor<T>,
-			asset_out: AssetId,
-			asset_in: AssetId,
-			amount: Balance,
-			max_limit: Balance,
-			discount: bool,
+			_asset_out: AssetId,
+			_asset_in: AssetId,
+			_amount: Balance,
+			_max_limit: Balance,
+			_discount: bool,
 		) -> DispatchResult {
-			let who = ensure_signed(origin)?;
+			let _who = ensure_signed(origin)?;
 
 			Ok(())
 		}
