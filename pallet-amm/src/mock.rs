@@ -18,10 +18,10 @@ pub type AccountId = u64;
 
 pub const ALICE: AccountId = 1;
 pub const BOB: AccountId = 2;
+pub const CHARLIE: AccountId = 3;
 
 pub const HDX: AssetId = 1000;
 pub const DOT: AssetId = 2000;
-pub const ACA: AssetId = 3000;
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
@@ -42,7 +42,7 @@ frame_support::construct_runtime!(
 parameter_types! {
     pub const BlockHashCount: u64 = 250;
     pub const SS58Prefix: u8 = 63;
-    pub TradeFee: Permill = Permill::from_float(0.3);
+    pub TradeFee: Permill = Permill::from_float(0.0);
     pub RegistryStringLimit: u32 = 100;
 }
 
@@ -130,22 +130,16 @@ impl Default for ExtBuilder {
         Self {
             endowed_accounts: vec![
                 (ALICE, HDX, 1_000_000_000_000_000u128),
-                (BOB, HDX, 1_000_000_000_000_000u128),
-                (ALICE, ACA, 1_000_000_000_000_000u128),
-                (BOB, ACA, 1_000_000_000_000_000u128),
                 (ALICE, DOT, 1_000_000_000_000_000u128),
-                (BOB, DOT, 1_000_000_000_000_000u128),
+                (BOB, HDX, 10_000_000_000_000u128),
+                (CHARLIE, HDX, 10_000_000_000_000u128),
+                (CHARLIE, DOT, 10_000_000_000_000u128),
             ],
         }
     }
 }
 
 impl ExtBuilder {
-    pub fn with_accounts(mut self, accounts: Vec<(AccountId, AssetId, Balance)>) -> Self {
-        self.endowed_accounts = accounts;
-        self
-    }
-
     pub fn build(self) -> sp_io::TestExternalities {
         let mut t = frame_system::GenesisConfig::default()
             .build_storage::<Test>()
@@ -163,13 +157,13 @@ impl ExtBuilder {
 
 pub struct Registry;
 
-pub const XYK_POOL_ID: AssetId = 1000;
+pub const POOL_SHARE_ASSET: AssetId = 2222;
 
 impl crate::traits::Create<(AssetId, AssetId)> for Registry {
     type AssetId = AssetId;
     type Error = DispatchError;
 
-    fn create_share_asset(assets: (AssetId, AssetId)) -> Result<Self::AssetId, Self::Error> {
-        Ok(XYK_POOL_ID)
+    fn create_share_asset(_assets: (AssetId, AssetId)) -> Result<Self::AssetId, Self::Error> {
+        Ok(POOL_SHARE_ASSET)
     }
 }
