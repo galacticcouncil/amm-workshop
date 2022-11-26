@@ -177,8 +177,10 @@ pub fn calculate_shares(
     asset_amount: Balance,
     share_issuance: Balance,
 ) -> Option<Balance> {
-    if asset_reserve.is_zero() {
-        return None;
+    if asset_reserve.is_zero() && asset_amount > 0  {
+        return Some(asset_amount);
+    }else if asset_reserve.is_zero(){
+        return None
     }
 
     let (reserve_hp, amount_hp, issuance_hp) =

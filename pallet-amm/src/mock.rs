@@ -98,23 +98,16 @@ impl orml_tokens::Config for Test {
 pub struct AccountIdConstructor();
 
 impl crate::traits::AccountIdFor<(AssetId, AssetId)> for AccountIdConstructor {
-    /*
-    fn from_assets(asset_a: AssetId, asset_b: AssetId, _: &str) -> u64 {
-        let mut a = asset_a as u128;
-        let mut b = asset_b as u128;
-        if a > b {
-            std::mem::swap(&mut a, &mut b)
-        }
-        (a * 1000 + b) as u64
-    }
-
-     */
-
     type AccountId = AccountId;
     type Error = DispatchError;
 
     fn create_account_id(assets: (AssetId, AssetId)) -> Result<Self::AccountId, Self::Error> {
-        todo!()
+        let mut a = assets.0 as u64;
+        let mut b = assets.0 as u64;
+        if a > b {
+            std::mem::swap(&mut a, &mut b)
+        }
+        Ok(a * 1000 + b)
     }
 }
 
@@ -170,11 +163,13 @@ impl ExtBuilder {
 
 pub struct Registry;
 
+pub const XYK_POOL_ID: AssetId = 1000;
+
 impl crate::traits::Create<(AssetId, AssetId)> for Registry {
     type AssetId = AssetId;
     type Error = DispatchError;
 
     fn create_share_asset(assets: (AssetId, AssetId)) -> Result<Self::AssetId, Self::Error> {
-        todo!()
+        Ok(XYK_POOL_ID)
     }
 }

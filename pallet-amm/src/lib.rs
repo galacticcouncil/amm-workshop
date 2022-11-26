@@ -4,6 +4,7 @@ use frame_support::sp_runtime::Permill;
 use frame_support::{dispatch::DispatchResult, traits::Get};
 use frame_system::ensure_signed;
 
+#[cfg(test)]
 mod mock;
 #[cfg(test)]
 mod tests;
