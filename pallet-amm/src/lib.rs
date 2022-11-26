@@ -24,6 +24,7 @@ pub mod pallet {
     use sp_runtime::traits::Zero;
 
     use math::xyk::*;
+    use sp_runtime::{FixedPointNumber, FixedU128};
 
     #[pallet::pallet]
     pub struct Pallet<T>(_);
@@ -121,6 +122,15 @@ pub mod pallet {
             asset_a: AssetId,
             asset_b: AssetId,
             share_asset_id: AssetId,
+        },
+        /// Swap executed.
+        SwapExecuted {
+            who: T::AccountId,
+            asset_in: AssetId,
+            asset_out: AssetId,
+            amount_in: Balance,
+            amount_out: Balance,
+            fee: Balance,
         },
     }
 
@@ -285,13 +295,47 @@ pub mod pallet {
         #[pallet::weight(<T as Config>::WeightInfo::sell())]
         pub fn sell(
             origin: OriginFor<T>,
-            _asset_in: AssetId,
-            _asset_out: AssetId,
-            _amount: Balance,
-            _max_limit: Balance,
-            _discount: bool,
+            asset_in: AssetId,
+            asset_out: AssetId,
+            amount_in: Balance,
+            min_limit: Balance,
         ) -> DispatchResult {
-            let _who = ensure_signed(origin)?;
+            let who = ensure_signed(origin)?;
+            let pair = if asset_in < asset_out {
+                (asset_in, asset_out)
+            } else {
+                (asset_out, asset_in)
+            };
+
+            let _ = Self::pools(&pair).ok_or(Error::<T>::PoolNotFound)?;
+
+            let pool_account = T::Account::create_account_id(pair)?;
+
+            let asset_in_reserve = T::Currency::balance(asset_in, &pool_account);
+            let asset_out_reserve = T::Currency::balance(asset_out, &pool_account);
+
+            let amount_out = calculate_out_given_in(asset_in_reserve, asset_out_reserve, amount_in)
+                .ok_or(Error::<T>::Math)?;
+
+            let fee = FixedU128::from(T::TradeFee::get())
+                .checked_mul_int(amount_out)
+                .ok_or(Error::<T>::Math)?;
+
+            let amount_out_with_fee = amount_out.checked_sub(fee).ok_or(Error::<T>::Math)?;
+
+            ensure!(amount_out_with_fee >= min_limit, Error::<T>::Limit);
+
+            T::Currency::transfer(asset_in, &who, &pool_account, amount_in, true)?;
+            T::Currency::transfer(asset_out, &pool_account, &who, amount_out_with_fee, true)?;
+
+            Self::deposit_event(Event::<T>::SwapExecuted {
+                who,
+                asset_in,
+                asset_out,
+                amount_in,
+                amount_out: amount_out_with_fee,
+                fee,
+            });
 
             Ok(())
         }
@@ -299,13 +343,47 @@ pub mod pallet {
         #[pallet::weight(<T as Config>::WeightInfo::buy())]
         pub fn buy(
             origin: OriginFor<T>,
-            _asset_out: AssetId,
-            _asset_in: AssetId,
-            _amount: Balance,
-            _max_limit: Balance,
-            _discount: bool,
+            asset_out: AssetId,
+            asset_in: AssetId,
+            amount_out: Balance,
+            max_limit: Balance,
         ) -> DispatchResult {
-            let _who = ensure_signed(origin)?;
+            let who = ensure_signed(origin)?;
+            let pair = if asset_in < asset_out {
+                (asset_in, asset_out)
+            } else {
+                (asset_out, asset_in)
+            };
+
+            let _ = Self::pools(&pair).ok_or(Error::<T>::PoolNotFound)?;
+
+            let pool_account = T::Account::create_account_id(pair)?;
+
+            let asset_in_reserve = T::Currency::balance(asset_in, &pool_account);
+            let asset_out_reserve = T::Currency::balance(asset_out, &pool_account);
+
+            let amount_in = calculate_in_given_out(asset_out_reserve, asset_in_reserve, amount_out)
+                .ok_or(Error::<T>::Math)?;
+
+            let fee = FixedU128::from(T::TradeFee::get())
+                .checked_mul_int(amount_in)
+                .ok_or(Error::<T>::Math)?;
+
+            let amount_in_with_fee = amount_out.checked_add(fee).ok_or(Error::<T>::Math)?;
+
+            ensure!(amount_in_with_fee <= max_limit, Error::<T>::Limit);
+
+            T::Currency::transfer(asset_in, &who, &pool_account, amount_in_with_fee, true)?;
+            T::Currency::transfer(asset_out, &pool_account, &who, amount_out, true)?;
+
+            Self::deposit_event(Event::<T>::SwapExecuted {
+                who,
+                asset_in,
+                asset_out,
+                amount_in: amount_in_with_fee,
+                amount_out,
+                fee,
+            });
 
             Ok(())
         }
