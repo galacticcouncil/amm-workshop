@@ -4,6 +4,7 @@ use frame_support::sp_runtime::Permill;
 use frame_support::{dispatch::DispatchResult, traits::Get};
 use frame_system::ensure_signed;
 
+mod mock;
 #[cfg(test)]
 mod tests;
 pub mod traits;
@@ -53,14 +54,14 @@ pub mod pallet {
             Error = DispatchError,
         >;
 
-        #[pallet::constant]
-        type CreationFee: Get<Permill>;
+        //#[pallet::constant]
+        //type CreationFee: Get<Permill>;
 
         #[pallet::constant]
         type TradeFee: Get<Permill>;
 
-        #[pallet::constant]
-        type WithdrawFee: Get<Permill>;
+        //#[pallet::constant]
+        //type WithdrawFee: Get<Permill>;
 
         /// The origin that can create a pool
         //type AuthorityOrigin: EnsureOrigin<Self::Origin>;
