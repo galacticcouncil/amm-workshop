@@ -39,5 +39,71 @@ pub mod pallet {
     pub enum Event<T: Config> {}
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {}
+    impl<T: Config> Pallet<T> {
+        #[pallet::weight(<T as Config>::WeightInfo::create_pool())]
+        pub fn create_pool(
+            origin: OriginFor<T>,
+            _asset_a: AssetId,
+            _amount_a: Balance,
+            _asset_b: AssetId,
+            _amount_b: Balance,
+        ) -> DispatchResult {
+            let _who = ensure_signed(origin)?;
+
+            Ok(())
+        }
+
+        #[pallet::weight(<T as Config>::WeightInfo::add_liquidity())]
+        pub fn add_liquidity(
+            origin: OriginFor<T>,
+            _asset_a: AssetId,
+            _asset_b: AssetId,
+            _amount_a: Balance,
+            _amount_b_max_limit: Balance,
+        ) -> DispatchResult {
+            let _who = ensure_signed(origin)?;
+
+            Ok(())
+        }
+
+        #[pallet::weight(<T as Config>::WeightInfo::remove_liquidity())]
+        pub fn remove_liquidity(
+            origin: OriginFor<T>,
+            _asset_a: AssetId,
+            _asset_b: AssetId,
+            _liquidity_amount: Balance,
+        ) -> DispatchResult {
+            let _who = ensure_signed(origin)?;
+
+            Ok(())
+        }
+
+        #[pallet::weight(<T as Config>::WeightInfo::sell())]
+        pub fn sell(
+            origin: OriginFor<T>,
+            _asset_in: AssetId,
+            _asset_out: AssetId,
+            _amount: Balance,
+            _max_limit: Balance,
+            _discount: bool,
+        ) -> DispatchResult {
+            let _who = ensure_signed(origin)?;
+
+            Ok(())
+        }
+
+        #[pallet::weight(<T as Config>::WeightInfo::buy())]
+        pub fn buy(
+            origin: OriginFor<T>,
+            _asset_out: AssetId,
+            _asset_in: AssetId,
+            _amount: Balance,
+            _max_limit: Balance,
+            _discount: bool,
+        ) -> DispatchResult {
+            let _who = ensure_signed(origin)?;
+
+            Ok(())
+        }
+    }
 }
