@@ -30,7 +30,7 @@ pub mod pallet {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
         /// Multi currency support
-        type Currency: Inspect<Self::AccountId, AssetId = AssetId>
+        type Currency: Inspect<Self::AccountId, AssetId = AssetId, Balance = Balance>
             + Mutate<Self::AccountId>
             + Transfer<Self::AccountId>;
 
