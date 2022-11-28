@@ -373,7 +373,7 @@ pub mod pallet {
                 .checked_mul_int(amount_in)
                 .ok_or(Error::<T>::Math)?;
 
-            let amount_in_with_fee = amount_out.checked_add(fee).ok_or(Error::<T>::Math)?;
+            let amount_in_with_fee = amount_out.checked_sub(fee).ok_or(Error::<T>::Math)?;
 
             ensure!(amount_in_with_fee <= max_limit, Error::<T>::Limit);
 

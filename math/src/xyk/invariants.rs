@@ -1,9 +1,8 @@
-use crate::types::Balance;
+use crate::assert_eq_approx;
+use crate::xyk::*;
 use primitive_types::U256;
 use proptest::prelude::*;
 use sp_arithmetic::FixedU128;
-
-use super::super::test_utils::assert_eq_approx;
 
 pub const ONE: Balance = 1_000_000_000_000;
 const TOLERANCE: Balance = 1_000;
@@ -44,7 +43,7 @@ proptest! {
         asset_out_reserve in asset_reserve(),
         amount in  trade_amount()
     ) {
-        let amount_out = crate::xyk::calculate_out_given_in(asset_in_reserve, asset_out_reserve, amount).unwrap();
+        let amount_out = calculate_out_given_in(asset_in_reserve, asset_out_reserve, amount).unwrap();
 
         assert_asset_invariant((asset_in_reserve, asset_out_reserve),
             (asset_in_reserve + amount, asset_out_reserve - amount_out),
@@ -61,7 +60,7 @@ proptest! {
         asset_out_reserve in asset_reserve(),
         amount in  trade_amount()
     ) {
-        let amount_in = crate::xyk::calculate_in_given_out(asset_out_reserve, asset_in_reserve, amount).unwrap();
+        let amount_in = calculate_in_given_out(asset_out_reserve, asset_in_reserve, amount).unwrap();
 
         assert_asset_invariant((asset_in_reserve, asset_out_reserve),
             (asset_in_reserve + amount_in, asset_out_reserve - amount),
@@ -79,7 +78,7 @@ proptest! {
         amount in  trade_amount(),
         issuance in asset_reserve(),
     ) {
-        let amount_b = crate::xyk::calculate_liquidity_in(asset_a_reserve, asset_b_reserve, amount).unwrap();
+        let amount_b = calculate_liquidity_in(asset_a_reserve, asset_b_reserve, amount).unwrap();
 
         let p0 = FixedU128::from((asset_a_reserve, asset_b_reserve));
         let p1 = FixedU128::from((asset_a_reserve + amount, asset_b_reserve + amount_b));
@@ -90,7 +89,7 @@ proptest! {
             FixedU128::from_float(0.0000000001),
             "Price has changed after add liquidity");
 
-        let shares = crate::xyk::calculate_shares(asset_a_reserve, amount, issuance).unwrap();
+        let shares = calculate_shares(asset_a_reserve, amount, issuance).unwrap();
 
         // THe following must hold when adding liquiduity.
         //delta_S / S <= delta_X / X
@@ -123,7 +122,7 @@ proptest! {
         shares in  trade_amount(),
         issuance in asset_reserve(),
     ) {
-        let (amount_a, amount_b) = crate::xyk::calculate_liquidity_out(asset_a_reserve, asset_b_reserve, shares, issuance).unwrap();
+        let (amount_a, amount_b) = calculate_liquidity_out(asset_a_reserve, asset_b_reserve, shares, issuance).unwrap();
 
         let p0 = FixedU128::from((asset_a_reserve, asset_b_reserve));
         let p1 = FixedU128::from((asset_a_reserve - amount_a, asset_b_reserve - amount_b));

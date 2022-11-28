@@ -3,12 +3,7 @@ use core::convert::TryFrom;
 use num_traits::Zero;
 use primitive_types::U256;
 
-#[cfg(test)]
-mod invariants;
-#[cfg(test)]
-mod tests;
-
-type Balance = u128;
+pub type Balance = u128;
 
 const FIXED_ROUND_UP: Balance = 1;
 
@@ -177,10 +172,10 @@ pub fn calculate_shares(
     asset_amount: Balance,
     share_issuance: Balance,
 ) -> Option<Balance> {
-    if asset_reserve.is_zero() && asset_amount > 0  {
+    if asset_reserve.is_zero() && asset_amount > 0 {
         return Some(asset_amount);
-    }else if asset_reserve.is_zero(){
-        return None
+    } else if asset_reserve.is_zero() {
+        return None;
     }
 
     let (reserve_hp, amount_hp, issuance_hp) =
